@@ -73,7 +73,8 @@ function App() {
     flexWrap: "wrap",
   };
   function soundSelected(event, sound) {
-    console.log(event, sound);
+    setSelectedSound(sound);
+    document.getElementById(sound.id).play();
   }
   const drumPadsList = soundBank.map((sound, index) => (
     <DrumPad sound={sound} key={index} soundSelected={soundSelected} />
