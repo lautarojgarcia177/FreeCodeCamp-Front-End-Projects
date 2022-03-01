@@ -3,4 +3,4 @@
 My resolution of the freecodecamp's front end development libraries certification projects.
 https://www.freecodecamp.org/learn/front-end-development-libraries/
 
-This repository is using npm workspaces for monorepo
+This repository is using npm workspaces feature for monorepo
