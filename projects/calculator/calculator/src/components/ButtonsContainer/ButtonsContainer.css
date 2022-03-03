@@ -1,0 +1,63 @@
+#container {
+    display: grid;
+    grid-template-areas:
+            "ac ac division multiplication"
+            "7 8 9 substraction"
+            "4 5 6 addition"
+            "1 2 3 equal"
+            "zero zero point equal";
+    grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+#ac {
+    grid-area: ac;
+}
+#division {
+    grid-area: division;
+}
+#multiplication {
+    grid-area: multiplication;
+}
+#substraction {
+    grid-area: substraction;
+}
+#addition {
+    grid-area: addition;
+}
+#equal {
+    grid-area: equal;
+}
+#point {
+    grid-area: point;
+}
+#zero {
+    grid-area: zero;
+}
+#1 {
+    grid-area: 1;
+}
+#2 {
+    grid-area: 2;
+}
+#3 {
+    grid-area: 3;
+}
+#4 {
+    grid-area: 4;
+}
+#5 {
+    grid-area: 5;
+}
+#6 {
+    grid-area: 6;
+}
+#7 {
+    grid-area: 7;
+}
+#8 {
+    grid-area: 8;
+}
+#9 {
+    grid-area: 9;
+}

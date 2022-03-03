@@ -1,8 +1,7 @@
-const containerStyles = {}
-
+import './display.css';
 export function Display(props: any) {
-    return <div style={containerStyles}>
-        <p style={{textAlign: "end"}}>Formula</p>
-        <p style={{textAlign: "end"}}>Result</p>
+    return <div>
+        <p>Formula</p>
+        <p>Result</p>
     </div>
 }
