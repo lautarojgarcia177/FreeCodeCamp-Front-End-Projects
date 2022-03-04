@@ -1,7 +1,8 @@
 import './display.css';
+
 export function Display(props: any) {
-    return <div>
-        <p>Formula</p>
-        <p>Result</p>
+    return <div id="display-container">
+        <p>{props.formula}</p>
+        <p>{props.result}</p>
     </div>
 }

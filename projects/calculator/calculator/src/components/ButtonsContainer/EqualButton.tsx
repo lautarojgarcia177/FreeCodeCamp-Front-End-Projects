@@ -1,5 +1,5 @@
 import './button.css';
 
 export function EqualButton(props: any) {
-    return <button> = </button>
+    return <button onClick={props.onEqualsPress}> = </button>
 }

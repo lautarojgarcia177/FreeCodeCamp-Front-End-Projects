@@ -1,5 +1,5 @@
 import './button.css';
 
 export function DivisionButton(props: any) {
-    return <button> / </button>
+    return <button onClick={props.onDivisionPress}> / </button>
 }

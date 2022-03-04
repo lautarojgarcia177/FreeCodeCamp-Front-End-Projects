@@ -1,5 +1,5 @@
 import './button.css';
 
 export function SubstractionButton(props: any) {
-    return <button> - </button>
+    return <button onClick={props.onSubstractionPress}> - </button>
 }
