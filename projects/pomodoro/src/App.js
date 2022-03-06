@@ -5,23 +5,37 @@ let countdownInterval;
 
 function App() {
     // TimerValue is in milliseconds
-    const defaultTimerValue = 1500000;
+    const defaultTimerValue = 2000// 1500000;
     const [breakLength, setBreakLength] = useState(300000);
     const [sessionLength, setSessionLength] = useState(defaultTimerValue);
     const [isRunning, setIsRunning] = useState(false);
     const [timerValue, setTimerValue] = useState(defaultTimerValue);
     const [isSessionTime, setIsSessionTime] = useState(false);
-    const [isBreakTime, setIsBreakTime] = useState(false);
 
     useEffect(() => {
         setTimerValue(sessionLength);
     }, [sessionLength]);
 
     useEffect(() => {
-        if (isRunning && timerValue === 0) {
-            startInterval();
+        clearInterval(countdownInterval);
+        if (isRunning) {
+            countdownInterval = setInterval(() => {
+                if (timerValue >= 1000) {
+                    setTimerValue(value => value - 1000);
+                } else {
+                    if (isSessionTime) {
+                        // start break
+                        setTimerValue(breakLength);
+                    } else {
+                        // start session
+                        setTimerValue(sessionLength)
+                    }
+                    // Toggle between session and break
+                    setIsSessionTime(x => !x);
+                }
+            }, 1000);
         }
-    }, [isRunning, timerValue]);
+    }, [isRunning]);
 
     // Increment session by one minute
     function onSessionIncrement() {
@@ -58,16 +72,6 @@ function App() {
 
     function onStart() {
         setIsRunning(true);
-        startInterval();
-    }
-
-    function startInterval() {
-        clearInterval(countdownInterval);
-        countdownInterval = setInterval(() => {
-            if (timerValue >= 1000) {
-                setTimerValue(value => value - 1000);
-            }
-        }, 1000);
     }
 
     function onPause() {
@@ -77,7 +81,7 @@ function App() {
 
     function onReset() {
         onPause();
-        setTimerValue(defaultTimerValue);
+        setTimerValue(sessionLength);
     }
 
     function formatTimerValue() {
@@ -101,9 +105,13 @@ function App() {
     </button>;
 
     const TimerLabel = () => {
+        debugger;
         if (isRunning) {
-            if (isSessionTime) return 'Session';
-            if (isBreakTime) return 'Break';
+            if (isSessionTime) {
+                return 'Session';
+            } else {
+                return 'Break';
+            }
         }
         return 'Session';
     }
