@@ -1,28 +1,93 @@
 import './App.css';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
 function App() {
-    const [breakLength, setBreakLength] = useState(5);
-    const [sessionLength, setSessionLength] = useState(25);
+    // TimerValue is in milliseconds
+    const defaultTimerValue = 1500000;
+    const [breakLength, setBreakLength] = useState(300000);
+    const [sessionLength, setSessionLength] = useState(defaultTimerValue);
+    const [isRunning, setIsRunning] = useState(false);
+    const [timerValue, setTimerValue] = useState(defaultTimerValue);
+    const [timerValueInterval, setTimerValueInterval] = useState(null);
 
+    useEffect(() => {
+        setTimerValue(sessionLength);
+    }, [sessionLength]);
+
+    // Increment session by one minute
     function onSessionIncrement() {
-        setSessionLength(sessionLength + 1);
+        if (!isRunning) {
+            setSessionLength(sessionLength + 60000);
+            onReset();
+        }
     }
 
     function onSessionDecrement() {
-        if (sessionLength > 0) {
-            setSessionLength(sessionLength - 1);
+        if (!isRunning) {
+            if (sessionLength >= 60000) {
+                setSessionLength(sessionLength - 60000);
+                onReset();
+            }
         }
     }
+
     function onBreakIncrement() {
-        setBreakLength(breakLength + 1);
+        if (!isRunning) {
+            if (breakLength <= 3540000) {
+                setBreakLength(breakLength + 60000);
+            }
+        }
     }
 
     function onBreakDecrement() {
-        if (breakLength > 0) {
-            setBreakLength(breakLength - 1);
+        if (!isRunning) {
+            if (breakLength >= 60000) {
+                setBreakLength(breakLength - 60000);
+            }
         }
     }
+
+    function onStart() {
+        setIsRunning(true);
+        setTimerValueInterval(setInterval(() => {
+            if (timerValue >= 1000) {
+                setTimerValue(value => value - 1000);
+            } else {
+                clearInterval(timerValueInterval);
+                setTimerValueInterval(null);
+            }
+        }, 1000));
+    }
+
+    function onPause() {
+        setIsRunning(false);
+        clearInterval(timerValueInterval);
+    }
+
+    function onReset() {
+        onPause();
+        setTimerValue(defaultTimerValue);
+    }
+
+    function formatTimerValue() {
+        let minutes = String((timerValue / 60000).toFixed());
+        if (minutes.length === 1) minutes = `0${minutes}`;
+        let seconds = String((timerValue % 60000) / 1000);
+        if (seconds.length === 1) seconds = `0${seconds}`;
+        return `${minutes}:${seconds}`;
+    }
+
+    function convertMillisecondsToMinutes(value) {
+        return (value / 60000);
+    }
+
+    const StartBtn = <button id="start_stop" className="btn__playback_controls"
+                             onClick={onStart}><i className="small material-icons">play_arrow</i>
+    </button>;
+
+    const StopBtn = <button id="pause" className="btn__playback_controls"
+                            onClick={onPause}><i className="small material-icons">pause</i>
+    </button>;
 
     return (
         <div id="container">
@@ -32,8 +97,8 @@ function App() {
                     <h5 style={{textAlign: 'center'}} id="break-label">Break Length</h5>
                     <div className="container__length">
                         <button className="btn__increment_decrement" id="break-decrement"><i
-                            onClick={onBreakIncrement} className="small material-icons">arrow_downward</i></button>
-                        <p id="break-length">{breakLength}</p>
+                            onClick={onBreakDecrement} className="small material-icons">arrow_downward</i></button>
+                        <p id="break-length">{convertMillisecondsToMinutes(breakLength)}</p>
                         <button className="btn__increment_decrement" id="break-increment"><i
                             onClick={onBreakIncrement} className="small material-icons">arrow_upward</i></button>
                     </div>
@@ -44,21 +109,22 @@ function App() {
                         <button className="btn__increment_decrement" id="session-decrement"
                                 onClick={onSessionDecrement}><i className="small material-icons">arrow_downward</i>
                         </button>
-                        <p id="session-length">{sessionLength}</p>
+                        <p id="session-length">{convertMillisecondsToMinutes(sessionLength)}</p>
                         <button className="btn__increment_decrement" id="session-increment"
                                 onClick={onSessionIncrement}><i className="small material-icons">arrow_upward</i>
                         </button>
                     </div>
                 </div>
             </div>
-            <div>
-                <p id="timer-label">Session</p>
-                <p id="time-left"></p>
+            <div id="container__timer">
+                <h4 id="timer-label">Session</h4>
+                <p id="time-left">{formatTimerValue()}</p>
             </div>
             <div>
-                <span id="start_stop">Start</span>
-                <span id="pause">Pause</span>
-                <span id="reset">Reset</span>
+                {!isRunning ? StartBtn : StopBtn}
+                <button id="reset" className="btn__playback_controls"
+                        onClick={onReset}><i className="small material-icons">stop</i>
+                </button>
             </div>
         </div>
     );

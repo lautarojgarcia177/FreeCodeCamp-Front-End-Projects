@@ -29,3 +29,25 @@
     width: 30%;
     height: 30%;
 }
+
+#container__timer {
+    margin-top: 2rem;
+    border-radius: 20px;
+    border: 5px solid black;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    width: 10rem;
+    height: 7rem;
+}
+
+#container__timer p {
+    margin: 0;
+}
+#container__timer h4 {
+    margin: 0;
+}
+
+
+
