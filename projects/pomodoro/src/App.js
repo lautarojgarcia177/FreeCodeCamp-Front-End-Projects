@@ -1,6 +1,8 @@
 import './App.css';
 import React, {useState, useEffect} from 'react';
 
+let countdownInterval;
+
 function App() {
     // TimerValue is in milliseconds
     const defaultTimerValue = 1500000;
@@ -8,11 +10,18 @@ function App() {
     const [sessionLength, setSessionLength] = useState(defaultTimerValue);
     const [isRunning, setIsRunning] = useState(false);
     const [timerValue, setTimerValue] = useState(defaultTimerValue);
-    const [timerValueInterval, setTimerValueInterval] = useState(null);
+    const [isSessionTime, setIsSessionTime] = useState(false);
+    const [isBreakTime, setIsBreakTime] = useState(false);
 
     useEffect(() => {
         setTimerValue(sessionLength);
     }, [sessionLength]);
+
+    useEffect(() => {
+        if (isRunning && timerValue === 0) {
+            startInterval();
+        }
+    }, [isRunning, timerValue]);
 
     // Increment session by one minute
     function onSessionIncrement() {
@@ -24,7 +33,7 @@ function App() {
 
     function onSessionDecrement() {
         if (!isRunning) {
-            if (sessionLength >= 60000) {
+            if (sessionLength > 60000) {
                 setSessionLength(sessionLength - 60000);
                 onReset();
             }
@@ -41,7 +50,7 @@ function App() {
 
     function onBreakDecrement() {
         if (!isRunning) {
-            if (breakLength >= 60000) {
+            if (breakLength > 60000) {
                 setBreakLength(breakLength - 60000);
             }
         }
@@ -49,19 +58,21 @@ function App() {
 
     function onStart() {
         setIsRunning(true);
-        setTimerValueInterval(setInterval(() => {
+        startInterval();
+    }
+
+    function startInterval() {
+        clearInterval(countdownInterval);
+        countdownInterval = setInterval(() => {
             if (timerValue >= 1000) {
                 setTimerValue(value => value - 1000);
-            } else {
-                clearInterval(timerValueInterval);
-                setTimerValueInterval(null);
             }
-        }, 1000));
+        }, 1000);
     }
 
     function onPause() {
         setIsRunning(false);
-        clearInterval(timerValueInterval);
+        clearInterval(countdownInterval);
     }
 
     function onReset() {
@@ -70,7 +81,7 @@ function App() {
     }
 
     function formatTimerValue() {
-        let minutes = String((timerValue / 60000).toFixed());
+        let minutes = String(Math.floor((timerValue / 60000)));
         if (minutes.length === 1) minutes = `0${minutes}`;
         let seconds = String((timerValue % 60000) / 1000);
         if (seconds.length === 1) seconds = `0${seconds}`;
@@ -88,6 +99,14 @@ function App() {
     const StopBtn = <button id="pause" className="btn__playback_controls"
                             onClick={onPause}><i className="small material-icons">pause</i>
     </button>;
+
+    const TimerLabel = () => {
+        if (isRunning) {
+            if (isSessionTime) return 'Session';
+            if (isBreakTime) return 'Break';
+        }
+        return 'Session';
+    }
 
     return (
         <div id="container">
@@ -117,7 +136,7 @@ function App() {
                 </div>
             </div>
             <div id="container__timer">
-                <h4 id="timer-label">Session</h4>
+                <h4 id="timer-label"><TimerLabel/></h4>
                 <p id="time-left">{formatTimerValue()}</p>
             </div>
             <div>
