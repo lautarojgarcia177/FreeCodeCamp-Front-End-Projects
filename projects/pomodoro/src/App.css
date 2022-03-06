@@ -1,0 +1,31 @@
+#container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#container__lengths {
+    width: 400px;
+    display: flex;
+    justify-content: space-around;
+}
+
+.container__length {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+}
+
+.container__length p {
+    margin: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.btn__increment_decrement {
+    border-radius: 100%;
+    width: 30%;
+    height: 30%;
+}
