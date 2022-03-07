@@ -1,41 +1,64 @@
 import './App.css';
 import React, {useState, useEffect} from 'react';
 
-let countdownInterval;
+let timerInterval;
+const audioAlarm = new Audio('https://raw.githubusercontent.com/freeCodeCamp/cdn/master/build/testable-projects-fcc/audio/BeepSound.wav');
 
 function App() {
     // TimerValue is in milliseconds
-    const defaultTimerValue = 2000// 1500000;
+    const defaultTimerValue = 1500000;
     const [breakLength, setBreakLength] = useState(300000);
     const [sessionLength, setSessionLength] = useState(defaultTimerValue);
     const [isRunning, setIsRunning] = useState(false);
     const [timerValue, setTimerValue] = useState(defaultTimerValue);
-    const [isSessionTime, setIsSessionTime] = useState(false);
+    const [isSessionTime, setIsSessionTime] = useState(true);
 
     useEffect(() => {
         setTimerValue(sessionLength);
     }, [sessionLength]);
 
-    useEffect(() => {
-        clearInterval(countdownInterval);
-        if (isRunning) {
-            countdownInterval = setInterval(() => {
-                if (timerValue >= 1000) {
-                    setTimerValue(value => value - 1000);
+    function startInterval(timeLeft) {
+        timerInterval = setInterval(() => {
+            if (timeLeft >= 1000) {
+                timeLeft -= 1000;
+            } else {
+                if (isSessionTime) {
+                    // start break
+                    timeLeft = breakLength;
                 } else {
-                    if (isSessionTime) {
-                        // start break
-                        setTimerValue(breakLength);
-                    } else {
-                        // start session
-                        setTimerValue(sessionLength)
-                    }
-                    // Toggle between session and break
-                    setIsSessionTime(x => !x);
+                    // start session
+                    timeLeft = sessionLength;
                 }
-            }, 1000);
+            }
+            setTimerValue(timeLeft);
+        }, 1000);
+    }
+
+    useEffect(() => {
+        clearInterval(timerInterval);
+        if (isRunning) {
+            let timeLeft = timerValue;
+            startInterval(timeLeft);
         }
     }, [isRunning]);
+
+    useEffect(() => {
+        if (timerValue === sessionLength || timerValue === breakLength) {
+            clearInterval(timerInterval);
+            if (isRunning) {
+                audioAlarm.play();
+                if (isSessionTime) {
+                    // start break
+                    setIsSessionTime(false);
+                    startInterval(breakLength);
+                } else {
+                    // start session
+                    setIsSessionTime(true);
+                    startInterval(sessionLength);
+                }
+            }
+        }
+    }, [timerValue]);
 
     // Increment session by one minute
     function onSessionIncrement() {
@@ -76,7 +99,6 @@ function App() {
 
     function onPause() {
         setIsRunning(false);
-        clearInterval(countdownInterval);
     }
 
     function onReset() {
@@ -103,18 +125,6 @@ function App() {
     const StopBtn = <button id="pause" className="btn__playback_controls"
                             onClick={onPause}><i className="small material-icons">pause</i>
     </button>;
-
-    const TimerLabel = () => {
-        debugger;
-        if (isRunning) {
-            if (isSessionTime) {
-                return 'Session';
-            } else {
-                return 'Break';
-            }
-        }
-        return 'Session';
-    }
 
     return (
         <div id="container">
@@ -144,7 +154,7 @@ function App() {
                 </div>
             </div>
             <div id="container__timer">
-                <h4 id="timer-label"><TimerLabel/></h4>
+                <h4 id="timer-label">{isSessionTime ? 'Session' : 'Break'}</h4>
                 <p id="time-left">{formatTimerValue()}</p>
             </div>
             <div>
